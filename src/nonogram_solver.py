@@ -22,6 +22,7 @@
 2 o  o
 1    o
 """
+from copy import deepcopy
 def nonogram_solver(a,c):
     board = [
         [' ',' ',' '],
@@ -67,12 +68,52 @@ for i in b:
 
 
 def solve_row(cond, row):
-    if cond[0] == len(row):
-        for j in range(len(row)):
-            row[j] = "o"
-    else:
-        sd = 0 + cond[0] - 1
-        et = len(row) - cond[0]
-        for i in range(et, sd + 1):
-            row[i] = "o"
+
+
+    # 채울 수 있는 칸은 o로 채운다
+    sd = get_start_of_start(row) + cond[0] - 1
+    et = get_end_of_end(row) - cond[0]
+    for i in range(et, sd + 1):
+        row[i] = "o"
+    
+    indx = row.index("o")
+    end = indx + (cond[0] - 1)
+    end2 = indx - (cond[0] - 1)
+    l = deepcopy(row)
+    for i in range(end2, end + 1):
+        l[i] = "o"
+    for i in range(len(l)):
+        if l[i] == " ":
+            row[i] = "x"
+        
+
+    for i in range(len(row)):
+        if row[i] == " " and cond[0] == count_o(row):
+            row[i] = "x"
+    
     return row
+
+def count_o(row):
+    count = 0
+    for i in range(len(row)):
+        if row[i] == "o":
+            count += 1
+    return count
+
+def get_start_of_start(row):
+    ss = 0
+    for i in range(len(row)):
+        if row[i] == "x":
+            ss += 1
+        else: 
+            break
+    return ss
+
+def get_end_of_end(row):
+    ee = len(row)
+    for i in range(len(row) - 1, 0, -1):
+        if row[i] == "x":
+            ee -= 1
+        else:
+            break
+    return ee
